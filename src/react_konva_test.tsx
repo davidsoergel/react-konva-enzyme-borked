@@ -26,7 +26,7 @@ describe('<Rect />', () => {
     // doesn't quite provide that (??).
     console.log('Instance:', rect.instance());
     console.log('Instance props:', rect.instance().props);
-    console.log('Instance props:', rect.instance().state);
+    console.log('Instance state:', rect.instance().state);
 
     // the DOM node has no onClick handler, and the name is 'rect' (lowercase)
     console.log('DOMNode:', rect.getDOMNode());
