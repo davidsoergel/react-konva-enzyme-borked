@@ -1,0 +1,35 @@
+{
+  "name": "react-konva-enzyme-fail",
+  "version": "0.1.0",
+  "dependencies": {
+    "@types/enzyme": "^3.1.14",
+    "@types/enzyme-adapter-react-16": "^1.0.3",
+    "@types/jasmine": "~2.8.9",
+    "@types/jasmine-enzyme": "^3.6.4",
+    "@types/react": "^16.3.13",
+    "@types/react-dom": "^16.0.5",
+    "enzyme": "^3.7.0",
+    "enzyme-adapter-react-16": "^1.6.0",
+    "jasmine": "~3.2.0",
+    "jasmine-core": "~3.2.1",
+    "jasmine-enzyme": "^7.0.0",
+    "karma": "^2.0.5",
+    "karma-chrome-launcher": "~2.2.0",
+    "karma-jasmine": "~1.1.0",
+    "karma-typescript": "~3.0.12",
+    "konva": "^2.5.0",
+    "react": "^16.6.0",
+    "react-dom": "^16.6.0",
+    "react-konva": "^16.6.0",
+    "typescript": "2.9.2"
+  },
+  "scripts": {
+    "test": "karma start"
+  },
+  "browserslist": [
+    "> 1%",
+    "ie >= 11",
+    "ios >= 10",
+    "android >= 6"
+  ]
+}
