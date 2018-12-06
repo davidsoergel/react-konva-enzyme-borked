@@ -17,10 +17,10 @@
     "karma-chrome-launcher": "~2.2.0",
     "karma-jasmine": "~1.1.0",
     "karma-typescript": "~3.0.12",
-    "konva": "^2.5.0",
+    "konva": "^2.5.1",
     "react": "^16.6.0",
     "react-dom": "^16.6.0",
-    "react-konva": "^16.6.0",
+    "react-konva": "^16.6.31",
     "typescript": "2.9.2"
   },
   "scripts": {
