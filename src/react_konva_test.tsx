@@ -20,7 +20,6 @@ class TestApp extends React.Component<TestAppProps, {}> {
       <MouseableKonvaStage
         width={1000}
         height={1000}
-        forSimulation={true}
       >
         <Layer>
           {this.props.components}
@@ -32,7 +31,7 @@ class TestApp extends React.Component<TestAppProps, {}> {
 
 describe('<MouseableKonvaStage />', () => {
 
-  it('is testable', () => {
+  it('is testable', async () => {
 
     let clickCount = 0;
     const handleClick = () => {
@@ -55,12 +54,12 @@ describe('<MouseableKonvaStage />', () => {
       MouseableKonvaStage).instance() as MouseableKonvaStage;
 
     // Clicking outside the Rect does nothing, as expected.
-    stage.simulateMouseClick({x: 40, y: 40});
+    await stage.simulateMouseClick({x: 40, y: 40});
     console.log('Click count: ', clickCount);  // 0
     expect(clickCount).toEqual(0);
 
     // Clicking inside the Rect calls the handler.
-    stage.simulateMouseClick({x: 20, y: 20});
+    await stage.simulateMouseClick({x: 20, y: 20});
     console.log('Click count: ', clickCount);  // 1
     expect(clickCount).toEqual(1);
 
@@ -78,17 +77,8 @@ describe('<MouseableKonvaStage />', () => {
 
     wrapper.setProps({components});
 
-    // PROBLEM: Clicking the new Rect has no effect
-    stage.simulateMouseClick({x: 40, y: 40});
-    console.log('Click count: ', clickCount);  // still 1!
-    // expect(clickCount).toEqual(2);  // fail
-
-    // APPARENT CAUSE: The hit graphs were not redrawn on the props update.
-    // Force redraw them to see if that helps.
-    stage.redrawLayerHitGraphs();
-
-    // Yep: now clicking the new Rect works
-    stage.simulateMouseClick({x: 40, y: 40});
+    // Clicking the new Rect works
+    await stage.simulateMouseClick({x: 40, y: 40});
     console.log('Click count: ', clickCount);  // 2
     expect(clickCount).toEqual(2);
   });

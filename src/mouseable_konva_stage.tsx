@@ -27,11 +27,6 @@ export interface MouseCoordinates {
   button?: any;
 }
 
-// tslint:disable-next-line:no-empty-interface
-interface MouseableKonvaStageProps extends StageProps {
-  forSimulation?: boolean;
-}
-
 // Adapted from the react-konva tests:
 // https://github.com/konvajs/react-konva/blob/master/tests/mocking.js
 
@@ -42,23 +37,25 @@ interface MouseableKonvaStageProps extends StageProps {
  * there might be some production use cases too.
  */
 export class MouseableKonvaStage extends
-  React.Component<MouseableKonvaStageProps, {}> {
+  React.Component<StageProps, {}> {
   // TypeScript typings prevent access to private variables, so ignore them
   // by typing this as any instead of Konva.Stage.
   // tslint:disable-next-line:no-any
   private stage: any;
 
-  constructor(props: MouseableKonvaStageProps) {
+  constructor(props: StageProps) {
     super(props);
   }
 
-  public simulateMouseDown(pos: MouseCoordinates) {
+  public async simulateMouseDown(pos: MouseCoordinates) {
+    await finishPendingCanvasUpdates();
     const top = 0; //this.stage.content.getBoundingClientRect().top as number;
     this.stage._mousedown(
       {clientX: pos.x, clientY: pos.y + top, button: pos.button});
   }
 
-  public simulateMouseMove(pos: MouseCoordinates) {
+  public async simulateMouseMove(pos: MouseCoordinates) {
+    await finishPendingCanvasUpdates();
     const top = this.stage.content.getBoundingClientRect().top as number;
     const evt = {clientX: pos.x, clientY: pos.y + top, button: pos.button};
     this.stage._mousemove(evt);
@@ -66,7 +63,8 @@ export class MouseableKonvaStage extends
     console.log('dragging');
   }
 
-  public simulateMouseUp(pos: MouseCoordinates) {
+  public async simulateMouseUp(pos: MouseCoordinates) {
+    await finishPendingCanvasUpdates();
     const top = this.stage.content.getBoundingClientRect().top as number;
     const evt = {clientX: pos.x, clientY: pos.y + top, button: pos.button};
     Konva.DD._endDragBefore(evt);
@@ -76,15 +74,15 @@ export class MouseableKonvaStage extends
     console.log('mouse up at', pos);
   }
 
-  public simulateMouseDrag(from: MouseCoordinates, to: MouseCoordinates) {
-    this.simulateMouseDown(from);
-    this.simulateMouseMove(to);
-    this.simulateMouseUp(to);
+  public async simulateMouseDrag(from: MouseCoordinates, to: MouseCoordinates) {
+    await this.simulateMouseDown(from);
+    await this.simulateMouseMove(to);
+    await this.simulateMouseUp(to);
   }
 
-  public simulateMouseClick(pos: MouseCoordinates) {
-    this.simulateMouseDown(pos);
-    this.simulateMouseUp(pos);
+  public async simulateMouseClick(pos: MouseCoordinates) {
+    await this.simulateMouseDown(pos);
+    await this.simulateMouseUp(pos);
   }
 
   public getPointerPosition(): MouseCoordinates {
@@ -101,28 +99,12 @@ export class MouseableKonvaStage extends
       </Stage>);
   }
 
+}
 
-  public componentDidUpdate() {
-    // It's overkill to do this on every update...
-    // this.redrawLayerHitGraphs();
-  }
-
-
-  public redrawLayerHitGraphs() {
-    if (this.props.forSimulation) {
-      // If we don't force redrawing the layer hit graphs, then their
-      // contents are not clickable.
-
-      // This is needed when using the above simulate*() methods, but I don't
-      // understand why.  Real user mouse clicks work fine in production, so
-      // we don't want to bog things down there-- hence the forSimulation
-      // switch, which we turn on only in tests.
-
-      console.log('Redraw hit graphs');
-
-      // Note find() returns a Konva.Collection, and drawHit() maps over that.
-      // tslint:disable-next-line:no-any
-      (this.stage.find('Layer') as any).drawHit();
-    }
-  }
+async function finishPendingCanvasUpdates() {
+  // Give the async layer hit graph redraw a chance to fire.
+  // Without this (or, alternatively, forcing a synchronous redraw via
+  // `stage.redrawLayerHitGraphs();`), there may be pending canvas updates
+  // that are not yet reflected here.
+  await new Promise(res => setTimeout(res, 1));
 }
